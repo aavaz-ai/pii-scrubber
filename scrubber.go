@@ -73,11 +73,6 @@ var (
 
 // NewWithCustomEntityScrubbers ...
 func NewWithCustomEntityScrubbers(params NewWithCustomEntityScrubbersParams) (Scrubber, error) {
-	// for key := range params.CustomEntityScrubbers {
-	// 	if _, ok := params.Config[key]; !ok {
-	// 		return nil, fmt.Errorf("missing config for custom or overriden entity: %v", key)
-	// 	}
-	// }
 
 	for key, val := range params.Config {
 		// skip the check for custom scrubbers
