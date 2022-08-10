@@ -37,7 +37,7 @@ func Test_ScrubStruct(t *testing.T) {
 		EmailNonPII: "abc@enterpret.com",
 	}
 
-	scrubber, _ := piiscrubber.NewWithCustomEntityScrubber(piiscrubber.NewWithCustomEntityScrubberParams{
+	scrubber, _ := piiscrubber.NewWithCustomEntityScrubbers(piiscrubber.NewWithCustomEntityScrubbersParams{
 		BlacklistedEntities: []piiscrubber.Entity{
 			piiscrubber.CreditCard,
 			piiscrubber.Phone,
@@ -83,7 +83,7 @@ func (s *customTestEntityScrubberError) Match(text string) [][]int {
 	return [][]int{{0}}
 }
 
-func (s *customTestEntityScrubberError) Mask(detectedEntity []byte, config piiscrubber.EntityConfig) []byte {
+func (s *customTestEntityScrubberError) Mask(detectedEntity []byte, config *piiscrubber.EntityConfig) []byte {
 	return []byte("Enterpret")
 }
 
@@ -117,7 +117,7 @@ func Test_ScrubStruct_Failure(t *testing.T) {
 		EmailNonPII: "abc@enterpret.com",
 	}
 
-	scrubber, _ := piiscrubber.NewWithCustomEntityScrubber(piiscrubber.NewWithCustomEntityScrubberParams{
+	scrubber, _ := piiscrubber.NewWithCustomEntityScrubbers(piiscrubber.NewWithCustomEntityScrubbersParams{
 		BlacklistedEntities: []piiscrubber.Entity{
 			piiscrubber.CreditCard,
 			piiscrubber.Phone,

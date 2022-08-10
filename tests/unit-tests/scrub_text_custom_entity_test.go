@@ -16,7 +16,7 @@ func (s *customTestEntityScrubber) Match(text string) [][]int {
 	return regex.FindAllStringIndex(text, -1)
 }
 
-func (s *customTestEntityScrubber) Mask(detectedEntity []byte, config piiscrubber.EntityConfig) []byte {
+func (s *customTestEntityScrubber) Mask(detectedEntity []byte, config *piiscrubber.EntityConfig) []byte {
 	return []byte("Enterpret")
 }
 
@@ -29,7 +29,7 @@ func Test_ScrubTextsCustom(t *testing.T) {
 		"Hi this is Anshal with, <PHONE_NUMBER>, Working at Enterpret",
 	}
 
-	scrubber, err := piiscrubber.NewWithCustomEntityScrubber(piiscrubber.NewWithCustomEntityScrubberParams{
+	scrubber, err := piiscrubber.NewWithCustomEntityScrubbers(piiscrubber.NewWithCustomEntityScrubbersParams{
 		BlacklistedEntities: []piiscrubber.Entity{
 			piiscrubber.CreditCard,
 			piiscrubber.Phone,

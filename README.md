@@ -38,7 +38,7 @@ Entity scrubber implements the following interface
 ```go
 type EntityScrubber interface {
 	Match(text string) [][]int
-	Mask(detectedEntity []byte, config EntityConfig) []byte
+	Mask(detectedEntity []byte, config *EntityConfig) []byte
 }
 ```
 **Match** function takes the text as input and returns all the locations for the Entity in the text
@@ -58,6 +58,7 @@ The `Scrubber` interface exposes two high-level functions
 
 example:
 ```go
+
 	texts := []string{
 		"Hi my phone number is +919140520809",
 	}
@@ -74,58 +75,205 @@ example:
 
     fmt.Println(response)
 ```
+Output:
+```go
+["Hi my phone number is <PHONE_NUMBER>"]
+```
 
 ### Scrub PII from Objects
 
 example:
 ```go
-    type Address struct {
-        Location string `pii:"true"`
-        ZipCode string `pii:"true"`
-    }
+
+	type Address struct {
+		Location string
+		ZipCode  string
+	}
 
 	type User struct {
-		Name         string            `pii:"true"`
-		CustomAttributes           map[string]string `pii:"true"`
-		Age           int
-		Position           string              `pii:"true"`
-		Address           *Address `pii:"true"`
-		EmailPII    string              `pii:"true"`
-		EmailNonPII string
+		Name             string            `pii:"true"`
+		CustomAttributes map[string]string `pii:"true"`
+		Age              int
+		Position         string
+		Address          *Address `pii:"true"`
+		Email            string   `pii:"true"`
 	}
 
-	v := sampleStruct{
-		Val: "Anshal +9140528009",
-		M: map[string]string{
+	v := User{
+		Name: "Anshal +9140528009",
+		CustomAttributes: map[string]string{
 			"PIIKey": "Hello here is my credit card 6011553157232994",
 		},
-		I: 10,
-		S: "Hello!",
-		N: &nestedSampleStruct{
-			K: "My 488-23-3729",
+		Age:      10,
+		Position: "Software Engineer",
+		Address: &Address{
+			Location: "My 488-23-3729",
+			ZipCode:  "22132",
 		},
-		EmailPII:    "abc@gmail.com",
-		EmailNonPII: "abc@enterpret.com",
+		Email: "abc@gmail.com",
 	}
 
-	scrubber, _ := piiscrubber.NewWithCustomEntityScrubber(piiscrubber.NewWithCustomEntityScrubberParams{
+	scrubber, err := piiscrubber.NewDefaultScrubber()
+	if err != nil {
+		panic(err)
+	}
+```
+Output:
+```json
+{
+  "Name": "Anshal <PHONE_NUMBER>",
+  "CustomAttributes": {
+    "PIIKey": "Hello here is my credit card <CREDIT_CARD>"
+  },
+  "Age": 10,
+  "Position": "Software Engineer",
+  "Address": {
+    "Location": "My <US_SSN>",
+    "ZipCode": "<ZIP_CODE>"
+  },
+  "Email": "<EMAIL_ADDRESS>"
+}
+```
+
+## Advance Usage
+
+### Adding a Custom Entity
+
+In the following example, we implement an orgNameEntityScrubber, that matches a certain organisation's name, and masks it with a placeholder value
+
+``` go
+type orgNameEntityScrubber struct {
+}
+
+func (s *orgNameEntityScrubber) Match(text string) [][]int {
+	regex := regexp.MustCompile("Enterpret")
+	return regex.FindAllStringIndex(text, -1)
+}
+
+func (s *orgNameEntityScrubber) Mask(detectedEntity []byte, config *piiscrubber.EntityConfig) []byte {
+	return []byte("<ORG_PLACEHOLDER>")
+}
+
+func main() {
+
+	texts := []string{
+		"Hi this is Anshal, my contact is +919140520809, I am currently working at Enterpret",
+	}
+
+	orgNameEntity := piiscrubber.Entity("ORG_NAME")
+
+	scrubber, err := piiscrubber.NewWithCustomEntityScrubbers(piiscrubber.NewWithCustomEntityScrubbersParams{
 		BlacklistedEntities: []piiscrubber.Entity{
 			piiscrubber.CreditCard,
 			piiscrubber.Phone,
 			piiscrubber.Email,
 			piiscrubber.SSN,
-			"COMPANY_NAME",
+			orgNameEntity,
+		},
+		CustomEntityScrubbers: map[piiscrubber.Entity]piiscrubber.EntityScrubber{
+			orgNameEntity: &orgNameEntityScrubber{},
+		},
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	response, err := scrubber.ScrubTexts(texts)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(response)
+}
+```
+Output:
+```json
+["Hi this is Anshal, my contact is <PHONE_NUMBER>, I am currently working at <ORG_PLACEHOLDER>"]
+```
+<br></br>
+### Overriding an Entity
+```go
+type creditCardOverrideScrubber struct {
+}
+
+func (s *creditCardOverrideScrubber) Match(text string) [][]int {
+	// implement the logic to detect credit-card number here
+
+	regex := regexp.MustCompile("4263 9826 4026 9299")
+	return regex.FindAllStringIndex(text, -1)
+}
+
+func (s *creditCardOverrideScrubber) Mask(detectedEntity []byte, config *piiscrubber.EntityConfig) []byte {
+	return []byte("<CUSTOM_CREDIT_CARD>")
+}
+
+func main() {
+
+	texts := []string{
+		"Hi this is Anshal, my credit card is 4263982640269299, and 4263 9826 4026 9299, I am currently working at Enterpret",
+	}
+
+	scrubber, err := piiscrubber.NewWithCustomEntityScrubbers(piiscrubber.NewWithCustomEntityScrubbersParams{
+		BlacklistedEntities: []piiscrubber.Entity{
+			piiscrubber.CreditCard,
+			piiscrubber.Email,
+			piiscrubber.SSN,
+		},
+		CustomEntityScrubbers: map[piiscrubber.Entity]piiscrubber.EntityScrubber{
+			piiscrubber.CreditCard: &creditCardOverrideScrubber{},
+		},
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	response, err := scrubber.ScrubTexts(texts)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(response)
+}
+```
+Output:
+```json
+["Hi this is Anshal, my credit card is 4263982640269299, and <CUSTOM_CREDIT_CARD>, I am currently working at Enterpret"]
+```
+<br></br>
+### Using Config for Custom Masking
+EntityConfig provides limited parameters to customise the masking operation for a detected entity. More advance requirements can be addressed by overriding the EntityScrubber itself
+
+```go
+texts := []string{
+		"Hi this is Anshal, my contact is +919140520809, and credit card is 4263982640269299, I am currently working at Enterpret",
+	}
+
+	scrubber, err := piiscrubber.NewWithCustomEntityScrubbers(piiscrubber.NewWithCustomEntityScrubbersParams{
+		BlacklistedEntities: []piiscrubber.Entity{
+			piiscrubber.CreditCard,
+			piiscrubber.Phone,
+			piiscrubber.Email,
+			piiscrubber.SSN,
 		},
 		Config: map[piiscrubber.Entity]*piiscrubber.EntityConfig{
 			piiscrubber.CreditCard: {
-				ReplaceWith: stringPtr("CREDIT_CARD_DETECTED"),
+				UnmaskedSuffixOffset: 4,
+				MaskWithChar:         runePtr('X'),
 			},
-			"COMPANY_NAME": {},
-		},
-		CustomEntityScrubbers: map[piiscrubber.Entity]piiscrubber.EntityScrubber{
-			"COMPANY_NAME": &customTestEntityScrubber{},
 		},
 	})
-```
+	if err != nil {
+		panic(err)
+	}
 
-## Using CLI
+	response, err := scrubber.ScrubTexts(texts)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(response)
+```
+Output:
+```json
+["Hi this is Anshal, my contact is <PHONE_NUMBER>, and credit card is XXXXXXXXXXXX9299, I am currently working at Enterpret"]
+```

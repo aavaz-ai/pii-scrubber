@@ -3,7 +3,7 @@ package piiscrubber
 // EntityScrubber ...
 type EntityScrubber interface {
 	Match(text string) [][]int
-	Mask(detectedEntity []byte, config EntityConfig) []byte
+	Mask(detectedEntity []byte, config *EntityConfig) []byte
 }
 
 type mACAddressEntityScrubber struct {
@@ -13,7 +13,7 @@ func (s *mACAddressEntityScrubber) Match(text string) [][]int {
 	return MACAddressRegex.FindAllStringIndex(text, -1)
 }
 
-func (s *mACAddressEntityScrubber) Mask(detectedEntity []byte, config EntityConfig) []byte {
+func (s *mACAddressEntityScrubber) Mask(detectedEntity []byte, config *EntityConfig) []byte {
 	return NativeMasking(detectedEntity, config)
 }
 
@@ -24,7 +24,7 @@ func (s *mD5HexEntityScrubber) Match(text string) [][]int {
 	return MD5HexRegex.FindAllStringIndex(text, -1)
 }
 
-func (s *mD5HexEntityScrubber) Mask(detectedEntity []byte, config EntityConfig) []byte {
+func (s *mD5HexEntityScrubber) Mask(detectedEntity []byte, config *EntityConfig) []byte {
 	return NativeMasking(detectedEntity, config)
 }
 
@@ -37,7 +37,7 @@ func (s *iSBNEntityScrubber) Match(text string) [][]int {
 	return indexes
 }
 
-func (s *iSBNEntityScrubber) Mask(detectedEntity []byte, config EntityConfig) []byte {
+func (s *iSBNEntityScrubber) Mask(detectedEntity []byte, config *EntityConfig) []byte {
 	return NativeMasking(detectedEntity, config)
 }
 
@@ -48,7 +48,7 @@ func (s *iPEntityScrubber) Match(text string) [][]int {
 	return IPRegex.FindAllStringIndex(text, -1)
 }
 
-func (s *iPEntityScrubber) Mask(detectedEntity []byte, config EntityConfig) []byte {
+func (s *iPEntityScrubber) Mask(detectedEntity []byte, config *EntityConfig) []byte {
 	return NativeMasking(detectedEntity, config)
 }
 
@@ -59,7 +59,7 @@ func (s *iBANEntityScrubber) Match(text string) [][]int {
 	return IBANRegex.FindAllStringIndex(text, -1)
 }
 
-func (s *iBANEntityScrubber) Mask(detectedEntity []byte, config EntityConfig) []byte {
+func (s *iBANEntityScrubber) Mask(detectedEntity []byte, config *EntityConfig) []byte {
 	return NativeMasking(detectedEntity, config)
 }
 
@@ -70,7 +70,7 @@ func (s *poBoxEntityScrubber) Match(text string) [][]int {
 	return PoBoxRegex.FindAllStringIndex(text, -1)
 }
 
-func (s *poBoxEntityScrubber) Mask(detectedEntity []byte, config EntityConfig) []byte {
+func (s *poBoxEntityScrubber) Mask(detectedEntity []byte, config *EntityConfig) []byte {
 	return NativeMasking(detectedEntity, config)
 }
 
@@ -81,7 +81,7 @@ func (s *zipCodeEntityScrubber) Match(text string) [][]int {
 	return ZipCodeRegex.FindAllStringIndex(text, -1)
 }
 
-func (s *zipCodeEntityScrubber) Mask(detectedEntity []byte, config EntityConfig) []byte {
+func (s *zipCodeEntityScrubber) Mask(detectedEntity []byte, config *EntityConfig) []byte {
 	return NativeMasking(detectedEntity, config)
 }
 
@@ -92,7 +92,7 @@ func (s *creditCardEntityScrubber) Match(text string) [][]int {
 	return CreditCardRegex.FindAllStringIndex(text, -1)
 }
 
-func (s *creditCardEntityScrubber) Mask(detectedEntity []byte, config EntityConfig) []byte {
+func (s *creditCardEntityScrubber) Mask(detectedEntity []byte, config *EntityConfig) []byte {
 	return NativeMasking(detectedEntity, config)
 }
 
@@ -106,7 +106,7 @@ func (s *phoneEntityScrubber) Match(text string) [][]int {
 	return indexes
 }
 
-func (s *phoneEntityScrubber) Mask(detectedEntity []byte, config EntityConfig) []byte {
+func (s *phoneEntityScrubber) Mask(detectedEntity []byte, config *EntityConfig) []byte {
 	return NativeMasking(detectedEntity, config)
 }
 
@@ -117,7 +117,7 @@ func (s *streetAddressEntityScrubber) Match(text string) [][]int {
 	return StreetAddressRegex.FindAllStringIndex(text, -1)
 }
 
-func (s *streetAddressEntityScrubber) Mask(detectedEntity []byte, config EntityConfig) []byte {
+func (s *streetAddressEntityScrubber) Mask(detectedEntity []byte, config *EntityConfig) []byte {
 	return NativeMasking(detectedEntity, config)
 }
 
@@ -128,7 +128,7 @@ func (s *sSNEntityScrubber) Match(text string) [][]int {
 	return SSNRegex.FindAllStringIndex(text, -1)
 }
 
-func (s *sSNEntityScrubber) Mask(detectedEntity []byte, config EntityConfig) []byte {
+func (s *sSNEntityScrubber) Mask(detectedEntity []byte, config *EntityConfig) []byte {
 	return NativeMasking(detectedEntity, config)
 }
 
@@ -139,7 +139,7 @@ func (s *linkEntityScrubber) Match(text string) [][]int {
 	return LinkRegex.FindAllStringIndex(text, -1)
 }
 
-func (s *linkEntityScrubber) Mask(detectedEntity []byte, config EntityConfig) []byte {
+func (s *linkEntityScrubber) Mask(detectedEntity []byte, config *EntityConfig) []byte {
 	return NativeMasking(detectedEntity, config)
 }
 
@@ -150,7 +150,7 @@ func (s *notKnownPortEntityScrubber) Match(text string) [][]int {
 	return NotKnownPortRegex.FindAllStringIndex(text, -1)
 }
 
-func (s *notKnownPortEntityScrubber) Mask(detectedEntity []byte, config EntityConfig) []byte {
+func (s *notKnownPortEntityScrubber) Mask(detectedEntity []byte, config *EntityConfig) []byte {
 	return NativeMasking(detectedEntity, config)
 }
 
@@ -161,7 +161,7 @@ func (s *sHA1HexEntityScrubber) Match(text string) [][]int {
 	return SHA1HexRegex.FindAllStringIndex(text, -1)
 }
 
-func (s *sHA1HexEntityScrubber) Mask(detectedEntity []byte, config EntityConfig) []byte {
+func (s *sHA1HexEntityScrubber) Mask(detectedEntity []byte, config *EntityConfig) []byte {
 	return NativeMasking(detectedEntity, config)
 }
 
@@ -172,7 +172,7 @@ func (s *timeEntityScrubber) Match(text string) [][]int {
 	return TimeRegex.FindAllStringIndex(text, -1)
 }
 
-func (s *timeEntityScrubber) Mask(detectedEntity []byte, config EntityConfig) []byte {
+func (s *timeEntityScrubber) Mask(detectedEntity []byte, config *EntityConfig) []byte {
 	return NativeMasking(detectedEntity, config)
 }
 
@@ -183,7 +183,7 @@ func (s *dateEntityScrubber) Match(text string) [][]int {
 	return DateRegex.FindAllStringIndex(text, -1)
 }
 
-func (s *dateEntityScrubber) Mask(detectedEntity []byte, config EntityConfig) []byte {
+func (s *dateEntityScrubber) Mask(detectedEntity []byte, config *EntityConfig) []byte {
 	return NativeMasking(detectedEntity, config)
 }
 
@@ -194,7 +194,7 @@ func (s *sHA256HexEntityScrubber) Match(text string) [][]int {
 	return SHA256HexRegex.FindAllStringIndex(text, -1)
 }
 
-func (s *sHA256HexEntityScrubber) Mask(detectedEntity []byte, config EntityConfig) []byte {
+func (s *sHA256HexEntityScrubber) Mask(detectedEntity []byte, config *EntityConfig) []byte {
 	return NativeMasking(detectedEntity, config)
 }
 
@@ -205,7 +205,7 @@ func (s *gUIDEntityScrubber) Match(text string) [][]int {
 	return GUIDRegex.FindAllStringIndex(text, -1)
 }
 
-func (s *gUIDEntityScrubber) Mask(detectedEntity []byte, config EntityConfig) []byte {
+func (s *gUIDEntityScrubber) Mask(detectedEntity []byte, config *EntityConfig) []byte {
 	return NativeMasking(detectedEntity, config)
 }
 
@@ -216,7 +216,7 @@ func (s *emailEntityScrubber) Match(text string) [][]int {
 	return EmailRegex.FindAllStringIndex(text, -1)
 }
 
-func (s *emailEntityScrubber) Mask(detectedEntity []byte, config EntityConfig) []byte {
+func (s *emailEntityScrubber) Mask(detectedEntity []byte, config *EntityConfig) []byte {
 	return NativeMasking(detectedEntity, config)
 }
 
@@ -227,7 +227,7 @@ func (s *btcAddressEntityScrubber) Match(text string) [][]int {
 	return BtcAddressRegex.FindAllStringIndex(text, -1)
 }
 
-func (s *btcAddressEntityScrubber) Mask(detectedEntity []byte, config EntityConfig) []byte {
+func (s *btcAddressEntityScrubber) Mask(detectedEntity []byte, config *EntityConfig) []byte {
 	return NativeMasking(detectedEntity, config)
 }
 
@@ -238,7 +238,7 @@ func (s *gitRepoEntityScrubber) Match(text string) [][]int {
 	return GitRepoRegex.FindAllStringIndex(text, -1)
 }
 
-func (s *gitRepoEntityScrubber) Mask(detectedEntity []byte, config EntityConfig) []byte {
+func (s *gitRepoEntityScrubber) Mask(detectedEntity []byte, config *EntityConfig) []byte {
 	return NativeMasking(detectedEntity, config)
 }
 
@@ -249,12 +249,12 @@ func (s *strictLinkEntityScrubber) Match(text string) [][]int {
 	return StrictLinkRegex.FindAllStringIndex(text, -1)
 }
 
-func (s *strictLinkEntityScrubber) Mask(detectedEntity []byte, config EntityConfig) []byte {
+func (s *strictLinkEntityScrubber) Mask(detectedEntity []byte, config *EntityConfig) []byte {
 	return NativeMasking(detectedEntity, config)
 }
 
 // NativeMasking ...
-func NativeMasking(detectedEntity []byte, config EntityConfig) []byte {
+func NativeMasking(detectedEntity []byte, config *EntityConfig) []byte {
 	if config.ReplaceWith != nil {
 		return []byte(*config.ReplaceWith)
 	}
