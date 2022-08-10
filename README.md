@@ -1,11 +1,9 @@
-# PII-Scrubber
+# Concepts
 
-## Concepts
-
-### Entity
+## Entity
 Entity represents an identifiable piece of text which we are interested in, e.g Date, Email, Credit-Card Number, etc.
 
-### EntityScrubber
+## EntityScrubber
 EntityScrubber responsible for detecting and masking an entity in the provided input. The library provides pre-built scrubbers for the following entities
 
 	Date          Entity = "DATE"
@@ -45,16 +43,17 @@ type EntityScrubber interface {
 
 **Mask** function is responsible for masking a detected instance of an Entity
 
-## Using Go-Lang Library
-
+# Installation
 To install the library, run the following command in your go project
 > go get github.com/aavaz-ai/pii-scrubber
+<br></br>
 
+# Usage
 The `Scrubber` interface exposes two high-level functions
 - **ScrubTexts**: Useful in scrubbing PII out of the string data
 - **ScrubStruct**: An abstraction written on top of ScrubTexts which makes it easier to scrub PII from various specified fields of an object
 
-### Scrub PII from String
+## Scrub PII from String
 
 example:
 ```go
@@ -80,7 +79,7 @@ Output:
 ["Hi my phone number is <PHONE_NUMBER>"]
 ```
 
-### Scrub PII from Objects
+## Scrub PII from Objects
 
 example:
 ```go
@@ -135,9 +134,9 @@ Output:
 }
 ```
 
-## Advance Usage
+# Advance Usage
 
-### Adding a Custom Entity
+## [ Add a Custom Entity ](https://github.com/aavaz-ai/pii-scrubber/tree/master/examples/custom-entity)
 
 In the following example, we implement an orgNameEntityScrubber, that matches a certain organisation's name, and masks it with a placeholder value
 
@@ -191,7 +190,7 @@ Output:
 ["Hi this is Anshal, my contact is <PHONE_NUMBER>, I am currently working at <ORG_PLACEHOLDER>"]
 ```
 <br></br>
-### Overriding an Entity
+## [ Override an Entity-Scrubber ](https://github.com/aavaz-ai/pii-scrubber/tree/master/examples/override-entity-scrubber)
 ```go
 type creditCardOverrideScrubber struct {
 }
@@ -240,7 +239,7 @@ Output:
 ["Hi this is Anshal, my credit card is 4263982640269299, and <CUSTOM_CREDIT_CARD>, I am currently working at Enterpret"]
 ```
 <br></br>
-### Using Config for Custom Masking
+## [ Use Config for Custom Masking ](https://github.com/aavaz-ai/pii-scrubber/tree/master/examples/mask-with-config)
 EntityConfig provides limited parameters to customise the masking operation for a detected entity. More advance requirements can be addressed by overriding the EntityScrubber itself
 
 ```go
@@ -276,4 +275,58 @@ texts := []string{
 Output:
 ```json
 ["Hi this is Anshal, my contact is <PHONE_NUMBER>, and credit card is XXXXXXXXXXXX9299, I am currently working at Enterpret"]
+```
+
+***
+
+<br></br>
+
+# Tests
+
+## Unit Tests
+``` bash
+cd tests/unit-tests
+go test ./...
+```
+
+## Coverage Tests
+```bash
+cd tests/benchmarks/coverage
+go run ./...
+```
+Output:
+```text
+_______STREET_ADDRESS_______
+Total: 200
+Caught: 162
+Coverage: 81%
+
+=====================
+_______CREDIT_CARD_______
+Total: 26
+Caught: 23
+Coverage: 88%
+
+=====================
+_______EMAIL_______
+Total: 13
+Caught: 13
+Coverage: 100%
+
+=====================
+```
+
+## Performance Tests
+```bash
+cd tests/benchmarks/performance
+go test -bench=.
+```
+Output:
+```bash
+goos: darwin
+goarch: amd64
+pkg: github.com/aavaz-ai/pii-scrubber/tests/benchmarks/performance
+cpu: VirtualApple @ 2.50GHz
+Benchmark_1000Sentences-10            87          12112771 ns/op
+Benchmark_100Sentences-10            543           2194837 ns/op
 ```
