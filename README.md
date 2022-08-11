@@ -1,10 +1,10 @@
 # Concepts
 
 ## Entity
-Entity represents an identifiable piece of text which we are interested in, e.g Date, Email, Credit-Card Number, etc.
+Entity represents an identifiable piece of text which we are interested in, e.g. Date, Email, Credit-Card Number etc.
 
 ## EntityScrubber
-EntityScrubber responsible for detecting and masking an entity in the provided input. The library provides pre-built scrubbers for the following entities
+EntityScrubber is responsible for detecting and masking an entity in the provided input. The library provides pre-built scrubbers for the following entities
 
 	Date          Entity = "DATE"
 	Time          Entity = "TIME"
@@ -30,7 +30,7 @@ EntityScrubber responsible for detecting and masking an entity in the provided i
 	StrictLink    Entity = "STRICT_LINK"
 
 
-User can override the implementation of any of the existing scrubber or add their own custom-entities and corresponding scrubbers. 
+Users can override the implementation of any of the existing scrubber or add their own custom-entities and corresponding scrubbers. 
 Entity scrubber implements the following interface
 
 ```go
@@ -44,14 +44,14 @@ type EntityScrubber interface {
 **Mask** function is responsible for masking a detected instance of an Entity
 
 # Installation
-To install the library, run the following command in your go project
-> go get github.com/aavaz-ai/pii-scrubber
+To install the library, run the following command in your go project: <br></br>
+`go get github.com/aavaz-ai/pii-scrubber`
 <br></br>
 
 # Usage
 The `Scrubber` interface exposes two high-level functions
-- **ScrubTexts**: Useful in scrubbing PII out of the string data
-- **ScrubStruct**: An abstraction written on top of ScrubTexts which makes it easier to scrub PII from various specified fields of an object
+- `ScrubTexts`: Useful in scrubbing PII out of the string data
+- `ScrubStruct`: An abstraction written on top of ScrubTexts which makes it easier to scrub PII from various specified fields of an object
 
 ## Scrub PII from String
 
