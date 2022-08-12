@@ -28,10 +28,15 @@ func main() {
 			texts:   emailData,
 			pattern: "<EMAIL_ADDRESS>",
 		},
+		piiscrubber.Phone: {
+			texts:   phoneNumebrs,
+			pattern: "<PHONE_NUMBER>",
+		},
 	}
 
 	for entity, data := range entityToData {
 		response, err := scrubber.ScrubTexts(data.texts)
+
 		if err != nil {
 			panic(err)
 		}
